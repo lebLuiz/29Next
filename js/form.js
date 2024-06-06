@@ -155,6 +155,171 @@ validate
 
     })
 
+    .addField('#id_billing_same_as_shipping_address', [{
+        validator: () => true,
+    }])
+
+    .addField(
+        '#id_first_name_billing_address',
+        [
+            {
+                validator: (value, fields) => {
+                    if (
+                        fields['#id_billing_same_as_shipping_address'] &&
+                        fields['#id_billing_same_as_shipping_address'].elem &&
+                        fields['#id_billing_same_as_shipping_address'].elem.checked
+                    ) return true;
+
+                    if (!value?.length || value?.length > 255 || !(/\b([A-ZÀ-ÿ][-,a-z. ']+[ ]*)+$/gi).test(value))
+                        return false
+
+                    return true;
+                },
+                errorMessage: 'Enter first name',
+            },
+        ],
+        {
+            errorsContainer: '.invalid-fname_billing_address',
+        }
+    )
+    .addField(
+        '#id_last_name_billing_address',
+        [
+            {
+                validator: (value, fields) => {
+                    if (
+                        fields['#id_billing_same_as_shipping_address'] &&
+                        fields['#id_billing_same_as_shipping_address'].elem &&
+                        fields['#id_billing_same_as_shipping_address'].elem.checked
+                    ) return true;
+
+                    if (!value?.length || value?.length > 255 || !(/\b([A-ZÀ-ÿ][-,a-z. ']+[ ]*)+$/gi).test(value))
+                        return false
+
+                    return true;
+                },
+                errorMessage: 'Enter last name',
+            },
+        ],
+        {
+            errorsContainer: '.invalid-lname_billing_address',
+        }
+    )
+    .addField(
+        '#id_shipping_address_line1_billing_address',
+        [
+            {
+                validator: (value, fields) => {
+                    if (
+                        fields['#id_billing_same_as_shipping_address'] &&
+                        fields['#id_billing_same_as_shipping_address'].elem &&
+                        fields['#id_billing_same_as_shipping_address'].elem.checked
+                    ) return true;
+
+                    if (!value?.length || value?.length > 255)
+                        return false
+
+                    return true;
+                },
+                errorMessage: 'Enter shipping address',
+            },
+        ],
+        {
+            errorsContainer: '.invalid-shipping_address_line1_billing_address',
+        }
+    )
+    .addField(
+        '#id_shipping_address_line4_billing_address',
+        [
+            {
+                validator: (value, fields) => {
+                    if (
+                        fields['#id_billing_same_as_shipping_address'] &&
+                        fields['#id_billing_same_as_shipping_address'].elem &&
+                        fields['#id_billing_same_as_shipping_address'].elem.checked
+                    ) return true;
+
+                    if (!value?.length || value?.length > 255)
+                        return false
+
+                    return true;
+                },
+                errorMessage: 'Enter shipping city',
+            }
+        ],
+        {
+            errorsContainer: '.invalid-shipping_address_line4_billing_address',
+        }
+    )
+    .addField(
+        '#id_shipping_state_billing_address',
+        [
+            {
+                validator: (value, fields) => {
+                    if (
+                        fields['#id_billing_same_as_shipping_address'] &&
+                        fields['#id_billing_same_as_shipping_address'].elem &&
+                        fields['#id_billing_same_as_shipping_address'].elem.checked
+                    ) return true;
+
+                    if (!value?.length)
+                        return false
+
+                    return true;
+                },
+                errorMessage: 'Enter shipping state/province',
+            }
+        ], 
+        {
+            errorsContainer: '.invalid-shipping_state_billing_address',
+        }
+    )
+    .addField(
+        '#id_shipping_postcode_billing_address',
+        [
+            {
+                validator: (value, fields) => {
+                    if (
+                        fields['#id_billing_same_as_shipping_address'] &&
+                        fields['#id_billing_same_as_shipping_address'].elem &&
+                        fields['#id_billing_same_as_shipping_address'].elem.checked
+                    ) return true;
+
+                    if (!value?.length || value?.length > 64)
+                        return false
+
+                    return true;
+                },
+                errorMessage: 'Enter shipping ZIP/Postcode',
+            },
+        ],
+        {
+            errorsContainer: '.invalid-shipping_postcode_billing_address',
+        }
+    )
+    .addField(
+        '#id_shipping_country_billing_address',
+        [
+            {
+                validator: (value, fields) => {
+                    if (
+                        fields['#id_billing_same_as_shipping_address'] &&
+                        fields['#id_billing_same_as_shipping_address'].elem &&
+                        fields['#id_billing_same_as_shipping_address'].elem.checked
+                    ) return true;
+
+                    if (!value?.length)
+                        return false
+
+                    return true;
+                },
+                errorMessage: 'Enter shipping country',
+            },
+        ],
+        {
+            errorsContainer: '.invalid-shipping_country_billing_address',
+        }
+    )
 
     .onFail((fields) => {
         console.log('Field validation fail', fields);

@@ -15,11 +15,12 @@ const numberParent = document.getElementById("bankcard-number");
 const cardErrBlock = document.getElementById("payment-error-block")
 
 const ccCheckbox = document.getElementById('id_use_new_card');
-const addCheckbox = document.getElementById('id_same_as_shipping');
+const checkboxBillSameShipAddress = document.getElementById('id_billing_same_as_shipping_address');
 const formCC = document.getElementById('form-cc');
 const formShip = document.getElementById('form-shipping');
 const formBill = document.getElementById('form-billing');
-const validErrBlock = document.getElementById("validation-error-block")
+const formBillAddress = document.querySelector('.form-billing-address');
+const validErrBlock = document.getElementById("validation-error-block");
 
 // pay method buttons
 const btnPaypal = document.querySelector('.pay-with-paypal');
@@ -120,7 +121,7 @@ const createOrder = async () => {
     btnCC.textContent = btnCC.dataset.loadingText;
     validErrBlock.innerHTML = ``
 
-    const orderData = {
+    let orderData = {
         "user": {
             "first_name": data.first_name,
             "last_name": data.last_name,
@@ -131,7 +132,7 @@ const createOrder = async () => {
         "use_default_shipping_address": false,
 
         "use_default_billing_address": false,
-        "billing_same_as_shipping_address": data.billing_same_as_shipping_address,
+        "billing_same_as_shipping_address": !!data.billing_same_as_shipping_address,
         "payment_detail": {
             "payment_method": data.payment_method,
             "card_token": data.card_token,
@@ -150,8 +151,28 @@ const createOrder = async () => {
         "success_url": campaign.nextStep(nextURL)
     }
 
+    if (!orderData.billing_same_as_shipping_address) {
+        orderData = {
+            ...JSON.parse(JSON.stringify(orderData)),
+            "billing_address": {
+                "country": data.shipping_country_billing_address,
+                "first_name": data.first_name_billing_address,
+                "is_default_for_billing": true,
+                "is_default_for_shipping": true,
+                "last_name": data.last_name_billing_address,
+                "line1": data.shipping_address_line1_billing_address,
+                "line2": data.shipping_address_line2_billing_address,
+                "line4": data.shipping_address_line4_billing_address,
+                "postcode": data.shipping_postcode_billing_address,
+                "state": data.shipping_state_billing_address,
+            },
+        }
+    }
 
-    console.log(orderData);
+    console.log({
+        data,
+        orderData
+    });
 
     try {
         const response = await fetch(ordersURL, {
@@ -307,6 +328,43 @@ const createProspect = () => {
 }
 const sendProspect = campaign.once(createCart);
 
+/**
+ * Handle update 'same as billing address'
+ */
+const handleUpdateSameBillingAddress = (event) => {
+    if (!event.target.checked) {
+        formBillAddress.removeAttribute('hidden');
+        checkboxBillSameShipAddress.setAttribute('value', false);
+        handleValueFormBillingAddress();
+    } else {
+        checkboxBillSameShipAddress.setAttribute('value', true);
+        formBillAddress.setAttribute('hidden', "");
+    }
+
+    validateBillingAddress();
+}
+
+const handleValueFormBillingAddress = () => {
+    const formData = new FormData(formEl);
+    const data = Object.fromEntries(formData);
+
+    document.getElementById('id_first_name_billing_address').value = data.first_name || '';
+    document.getElementById('id_last_name_billing_address').value = data.last_name || '';
+    document.getElementById('id_shipping_address_line1_billing_address').value = data.shipping_address_line1 || '';
+    document.getElementById('id_shipping_address_line4_billing_address').value = data.shipping_address_line4 || '';
+    document.getElementById('id_shipping_state_billing_address').value = data.shipping_state || '';
+    document.getElementById('id_shipping_postcode_billing_address').value = data.shipping_postcode || '';
+}
+
+const validateBillingAddress = () => {
+    validate.revalidateField('#id_first_name_billing_address');
+    validate.revalidateField('#id_last_name_billing_address');
+    validate.revalidateField('#id_shipping_address_line1_billing_address');
+    validate.revalidateField('#id_shipping_address_line4_billing_address');
+    validate.revalidateField('#id_shipping_state_billing_address');
+    validate.revalidateField('#id_shipping_postcode_billing_address');
+    validate.revalidateField('#id_shipping_country_billing_address');
+}
 
 /**
  * Create Packages
@@ -501,6 +559,7 @@ document.addEventListener("DOMContentLoaded", function(event) {
 firstName.addEventListener('blur', createProspect);
 lastName.addEventListener('blur', createProspect);
 email.addEventListener('blur', createProspect);
+checkboxBillSameShipAddress.addEventListener('change', handleUpdateSameBillingAddress);
 
 btnPaypal.addEventListener('click', event => {
     validate.revalidateField('#id_first_name'),
